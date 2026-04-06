@@ -10,6 +10,7 @@ python = ">=3.10,<4.0"
 feedparser = ">=6.0.12,<7.0.0"
 python-dotenv = ">=1.2.2,<2.0.0"
 newspaper3k = "^0.2.8"
+lxml-html-clean = "^0.4.4"
 
 [tool.poetry.scripts]
 run-agent = "ai_news_agent.main:main"
