@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 from datetime import datetime
 
 from dotenv import load_dotenv
+from newspaper import Article
 
 load_dotenv()
 
@@ -17,10 +18,9 @@ if not EMAIL or not APP_PASSWORD:
 RSS_FEEDS = [
     "https://arxiv.org/rss/cs.AI",
     "https://techcrunch.com/tag/artificial-intelligence/feed/",
-    "https://www.theverge.com/ai-artificial-intelligence/rss/index.xml",
 ]
 
-KEYWORDS = ["llm", "gpt", "openai", "agent", "rag", "ai", "machine learning"]
+KEYWORDS = ["llm", "gpt", "openai", "agent", "rag", "ai", "machine learning", "mistral", "anthropic"]
 
 
 def fetch_articles():
@@ -34,9 +34,27 @@ def fetch_articles():
             link = entry.link
 
             if any(k in title.lower() for k in KEYWORDS):
-                articles.append({"title": title, "link": link})
+                articles.append({"title": title, "link": link, "source": url})
 
     return articles[:10]
+
+
+def fetch_summary(article):
+    """Récupère un résumé selon la source"""
+    if "arxiv.org" in article["source"]:
+        # Pour arXiv, summary est dans le feed
+        return article.get("summary", "")[:500] + "…" if article.get("summary") else "No summary available…"
+    else:
+        # Pour TechCrunch, on utilise newspaper3k
+        try:
+            art = Article(article["link"])
+            art.download()
+            art.parse()
+            art.nlp()  # génère art.summary
+            summary_sentences = art.summary.split(". ")
+            return ". ".join(summary_sentences[:3]) + "…"  # max 3 phrases
+        except Exception as e:
+            return "Résumé non disponible…"
 
 
 def format_email(articles):
@@ -47,7 +65,8 @@ def format_email(articles):
         return content + "No relevant news today."
 
     for i, a in enumerate(articles, 1):
-        content += f"{i}. {a['title']}\n{a['link']}\n\n"
+        summary = fetch_summary(a)
+        content += f"{i}. {a['title']}\n   {summary}\n   {a['link']}\n\n"
 
     return content
 
