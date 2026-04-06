@@ -21,7 +21,9 @@ jobs:
         run: pip install poetry
 
       - name: Install dependencies
-        run: poetry install
+        run: |
+          poetry env use python3.11
+          poetry install --no-interaction --no-ansi
 
       - name: Run agent
         env:
