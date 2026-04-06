@@ -1,22 +1,17 @@
-[project]
+[tool.poetry]
 name = "ai-news-agent"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "tmelwig",email = "tmelwig@gmail.com"}
-]
-readme = "README.md"
-requires-python = ">=3.10,<4.0"
-dependencies = [
-    "feedparser (>=6.0.12,<7.0.0)",
-    "python-dotenv (>=1.2.2,<2.0.0)"
-]
-
-[tool.poetry]
+authors = ["tmelwig <tmelwig@gmail.com>"]
 packages = [{include = "ai_news_agent", from = "src"}]
 
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+feedparser = ">=6.0.12,<7.0.0"
+python-dotenv = ">=1.2.2,<2.0.0"
+
 [tool.poetry.scripts]
-run-agent = "src.ai_news_agent.main:main"
+run-agent = "ai_news_agent.main:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
